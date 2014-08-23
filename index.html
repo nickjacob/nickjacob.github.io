@@ -1,0 +1,35 @@
+---
+layout: default
+---
+
+<div class="home">
+
+  <div class='posts'>
+    <h1 class="content-subhead">Recent Posts</h1>
+    {% for post in site.posts %}
+      <section class="post">
+          <header class="post-header">
+
+              <h2 class="post-title">
+                <img class="post-avatar" alt="Nick Jacob" height="48" width="48" src="http://www.gravatar.com/avatar/38f272df998eba5da54037b3f09010b5.jpg?s=40">
+                <a class='post-title-link' href='{{ post.url | prepend: site.baseurl }}' >{{ post.title }}</a>
+              </h2>
+
+              <p class="post-meta">
+
+              By <span class="post-author" href="#">{{ post.author }}</span> under 
+              {% for cat in post.categories %}
+                <span class='post-category post-category{{ cat }}'>{{ cat }}</span>
+              {% endfor %}
+              </p>
+          </header>
+          <div class='post-content'>
+            {{ post.content }}
+          </div>
+      </section>
+    {% endfor %}
+  </div>
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+
+</div>
