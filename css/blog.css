@@ -310,3 +310,40 @@ dt.position ~ dd {
 dd > ul {
   margin: 0;
   padding: 0.25em 1.25em; }
+
+.flag {
+
+  animation-name: flag;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+
+}
+
+@keyframes flag {
+
+  0% {
+
+    transform: skewY(0deg) translateY(0px);
+
+  }
+
+  10% {
+    transform: skewY(5deg) translateY(2.5px);
+  }
+
+  25% {
+    transform: skewY(15deg) translateY(10px);
+  }
+
+  50% {
+    transform: skewY(10deg) translateY(5px);
+  }
+
+  75% {
+    transform: skewY(0deg) translateY(0px);
+  }
+
+  100% {
+    transform: skewY(-2.5deg) translateY(-5px);
+  }
+}
