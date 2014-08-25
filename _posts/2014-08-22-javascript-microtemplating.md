@@ -65,7 +65,7 @@ function compile (tpl) {
 }
 
 // usage:
-var tpl = compile("<div id='{{id}}'><span class='name'>{{name}}</span></div>");
+var tpl = compile("<div id='\{\{id\}\}'><span class='name'>\{\{name\}\}</span></div>");
 
 // template is compiled, so you could also call compile() on the server...
 // although for that you should probably use a real library
