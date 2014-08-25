@@ -29,6 +29,13 @@ function compile (tpl) {
   // closure to create quoted strings:
   var _qq = function(str){ return qq + str + qq; };
 
+  // sub-helper to generate string that represents property lookup
+  // with check for function types:
+  function _lookUp(obj, prop, isTrue, isFalse) {
+    return _qq(" + ((typeof(" + prop + ") !== " + _qq("function") + ") ? "
+      + isTrue + ":" + isFalse + ")");
+  }
+
   // helper function; create a string to represent accessing 
   // an attribute on the object; if it's nested, do the lookup
   // (at runtime), if it's a function, call it with parentheses:
@@ -36,14 +43,13 @@ function compile (tpl) {
 
     return /\./g.test(prop)
       ? _qq(" + __deep(obj, " + _qq(prop) + ") + ")
-      : _qq(" + ((typeof(" + prop + ") !== " + _qq("function") + ") ? " + prop + " : " + prop + "()) +");
-
+      : _lookUp(obj, prop, prop, prop + "()");
   }
 
   // the function that will turn references to attributes
   // into actual accesses on the object:
-  var repFn = function (str, m) {
-      return _access(obj, m);
+  function repFn ($0, $1) {
+      return _access(obj, $1);
   };
 
   // normalize whitespace and replace quotes
