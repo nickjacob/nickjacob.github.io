@@ -29,15 +29,31 @@ function compile (tpl) {
   // closure to create quoted strings:
   var _qq = function(str){ return qq + str + qq; };
 
+  // helper function; create a string to represent accessing 
+  // an attribute on the object; if it's nested, do the lookup
+  // (at runtime), if it's a function, call it with parentheses:
+  function _access(obj, prop) {
+
+    return /\./g.test(prop)
+      ? _qq(" + __deep(obj, " + _qq(prop) + ") + ")
+      : _qq(" + ((typeof(" + prop + ") !== " + _qq("function") + ") ? " + prop + " : " + prop + "()) +");
+
+  }
+
   // the function that will turn references to attributes
   // into actual accesses on the object:
   var repFn = function (str, m) {
-      return (/\./g.test(m)) ? _qq("+ __deep(obj, " + _qq(m) + ") +") : _qq(" + ((typeof(" + m + ") !== " + _qq("function") +") ? " + m + " : " + m + "()) +");
+      return _access(obj, m);
   };
 
-  // genrate a Function object with a generated string
-  return Function(["obj"], "with (obj) { return " + _qq(tpl.replace(/[\r\n\s\t]/g, " ").replace(/['"]/g,"\$&").replace(/{{\s*([\w\.]+)\s*}}/ig, repFn)) + "; }");
+  // normalize whitespace and replace quotes
+  var normalized = tpl.replace(/[\r\n\s\t]/g, " ").replace(/['"]/g, "\$&");
 
+  // interpolate the variables
+  var interpolated = normalized.replace(/{{\s*([\w\.]+)\s*}}/ig, repFn);
+
+  // return the generated function
+  return Function(["obj"], "with (obj){ return " + _qq(interpolated) + "; }");
 }
 
 {% endhighlight %}
