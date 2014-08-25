@@ -16,61 +16,6 @@ I figured all I really need in client-side templating is string interpolation, p
 
 This can be represented in a lot fewer lines, although I have to admit it's still not really super readable. Just to break down the `compile` function.
 
-On a high level, the function produces a new function that performs string interpolation using concatentation, dynamically looking at the object passed in (using `with` statement), and calling the `__deep` function. Ideally, this could be called with a context that would provide additional helpers:
-
-{% highlight javascript %}
-function compile (tpl) {
-
-  // figure out what kind of quotes are used in the template
-  // since we're creating a function body, we have to use
-  // use the oposite in our interpolation
-  var qq = /"/.test(tpl) ? "\'" : "\"";
-
-  // closure to create quoted strings:
-  var _qq = function(str){ return qq + str + qq; };
-
-  // sub-helper to generate string that represents property lookup
-  // with check for function types:
-  function _lookUp(obj, prop, isTrue, isFalse) {
-    return _qq(" + ((typeof(" + prop + ") !== " + _qq("function") + ") ? "
-      + isTrue + ":" + isFalse + ")");
-  }
-
-  // helper function; create a string to represent accessing 
-  // an attribute on the object; if it's nested, do the lookup
-  // (at runtime), if it's a function, call it with parentheses:
-  function _access(obj, prop) {
-    return /\./g.test(prop)
-      ? _qq(" + __deep(obj, " + _qq(prop) + ") + ")
-      : _lookUp(obj, prop, prop, prop + "()");
-  }
-
-  // the function that will turn references to attributes
-  // into actual accesses on the object:
-  function repFn ($0, $1) {
-      return _access(obj, $1);
-  };
-
-  // 1: normalize whitespace and replace quotes
-  // e.g., <div>{{propname}}</div>
-  var normalized = tpl.replace(/[\r\n\s\t]/g, " ").replace(/['"]/g, "\$&");
-
-  // 2: interpolate the variables
-  // to produce function body, e.g.: '<div>" + propname + "</div>"'
-  var interpolated = normalized.replace(/{{\s*([\w\.]+)\s*}}/ig, repFn);
-
-  // return the generated function
-  // e.g., function(obj){ with (obj) { return "<div>" + propname + "</div>"; } }
-  return Function(["obj"], "with (obj){ return " + _qq(interpolated) + "; }");
-}
-
-// usage:
-var tpl = compile("<div id='\{\{id\}\}'><span class='name'>\{\{name\}\}</span></div>");
-
-// template is compiled, so you could also call compile() on the server...
-// although for that you should probably use a real library
-document.body.insertAdjacentHTML('beforeend', tpl({ id: 'awesome', name: 'nick' }));
-
-{% endhighlight %}
+On a high level, the function produces a new function that performs string interpolation using concatentation, dynamically looking at the object passed in (using `with` statement).  Ideally, this could be called with a context that would provide additional helpers:
 
 There are a lot of improvements that could be made, but I'm a fan of this for its simplicity and the fact that it forces me to avoid pushing to much logic onto the actual view.
