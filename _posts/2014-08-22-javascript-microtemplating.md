@@ -40,7 +40,6 @@ function compile (tpl) {
   // an attribute on the object; if it's nested, do the lookup
   // (at runtime), if it's a function, call it with parentheses:
   function _access(obj, prop) {
-
     return /\./g.test(prop)
       ? _qq(" + __deep(obj, " + _qq(prop) + ") + ")
       : _lookUp(obj, prop, prop, prop + "()");
@@ -52,15 +51,25 @@ function compile (tpl) {
       return _access(obj, $1);
   };
 
-  // normalize whitespace and replace quotes
+  // 1: normalize whitespace and replace quotes
+  // e.g., <div>{{propname}}</div>
   var normalized = tpl.replace(/[\r\n\s\t]/g, " ").replace(/['"]/g, "\$&");
 
-  // interpolate the variables
+  // 2: interpolate the variables
+  // to produce function body, e.g.: '<div>" + propname + "</div>"'
   var interpolated = normalized.replace(/{{\s*([\w\.]+)\s*}}/ig, repFn);
 
   // return the generated function
+  // e.g., function(obj){ with (obj) { return "<div>" + propname + "</div>"; } }
   return Function(["obj"], "with (obj){ return " + _qq(interpolated) + "; }");
 }
+
+// usage:
+var tpl = compile("<div id='{{id}}'><span class='name'>{{name}}</span></div>");
+
+// template is compiled, so you could also call compile() on the server...
+// although for that you should probably use a real library
+document.body.insertAdjacentHTML('beforeend', tpl({ id: 'awesome', name: 'nick' }));
 
 {% endhighlight %}
 
