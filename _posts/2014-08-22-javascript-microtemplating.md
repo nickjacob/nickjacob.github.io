@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Javascript Micro-Templating
+title: How to write a tiny client-side, compiled-template library
 date: 2014-08-22 12:00:00
 categories: javascript
 author: Nick Jacob
