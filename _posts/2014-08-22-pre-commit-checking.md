@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Git Hooks: No Large Files!
+title: Git Hooks for Clean Repos
 date: 2014-08-22 12:00:00
 categories: git bash
 author: Nick Jacob
